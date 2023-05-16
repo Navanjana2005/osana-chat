@@ -1,10 +1,8 @@
 from flask import Flask, render_template_string, request
 import openai
-import time
-import langid
-from googletrans import Translator
 
-openai.api_key = "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"
+
+openai.api_key = "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"
 
 app = Flask(__name__)
 
@@ -158,10 +156,8 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    translator = Translator()
+    
     user_input = request.form["user_input"]
-    language, _ = langid.classify(user_input)
-    translation = translator.translate(user_input, src=language, dest="en").text
 
     def generate_emoji(text):
         response = openai.Completion.create(
@@ -187,12 +183,12 @@ def chat():
         )
         return response.choices[0].text.strip()
 
-    prompt = f"User: {translation} Osana:"
+    prompt = f"User: {user_input} Osana:"
     ai_response = generate_response(prompt)
     emoji = generate_emoji(ai_response)
 
-    translation_reply = translator.translate(ai_response, src="en", dest=language).text
-    return {"ai_response": translation_reply, "emoji": emoji}
+
+    return {"ai_response": ai_response, "emoji": emoji}
 
 if __name__ == "__main__":
     app.run(debug=True)
